@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Properties;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 
 /**
  * @author Martin Gencur
@@ -46,11 +45,7 @@ public class FootballManager {
 
     public FootballManager(Console con) {
         this.con = con;
-        ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.addServer()
-              .host(jdgProperty(JDG_HOST))
-              .port(Integer.parseInt(jdgProperty(HOTROD_PORT)));
-        cacheManager = new RemoteCacheManager(builder.build());
+        cacheManager = new RemoteCacheManager(jdgProperty(JDG_HOST) + ":" + jdgProperty(HOTROD_PORT));
         cache = cacheManager.getCache("teams");
         if(!cache.containsKey(teamsKey)) {
             List<String> teams = new ArrayList<String>();
@@ -136,7 +131,7 @@ public class FootballManager {
 
     public static void main(String[] args) {
         Console con = System.console();
-        FootballManager manager = new FootballManager(con);
+        FootballManager manager = new FootballManager(System.console());
         con.printf(initialPrompt);
 
         while (true) {
